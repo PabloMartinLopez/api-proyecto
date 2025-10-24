@@ -1,0 +1,13 @@
+{
+  "name": "api-proyecto",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "index": "node run",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
