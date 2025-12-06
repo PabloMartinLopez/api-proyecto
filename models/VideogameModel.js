@@ -1,30 +1,47 @@
-import db from '../config/db.js';
+import sql from "../config/db.js";
 
-export const obtenerVideogames = async () => {
-    const [rows] = await db.query('SELECT * FROM Videogames');
+// Obtener todos los videojuegos
+export const getAllVideogames = async () => {
+    const rows = await sql`SELECT * FROM "Videogames"`;
     return rows;
 };
 
-export const obtenerVideogamePorId = async (id) => {
-    const [rows] = await db.query('SELECT * FROM Videogames WHERE id = ?', [id]);
-    return rows[0];
+// Obtener videojuego por ID
+export const getVideogameById = async (id) => {
+    const result = await sql`SELECT * FROM Videogames WHERE id = ${id}`;
+    return result[0];
 };
 
-export const crearVideogame = async ({ nombre, puesto, salario }) => {
-    const [result] = await db.query(
-        'INSERT INTO Videogames (nombre, genero) VALUES (?, ?, ?)',
-        [nombre, genero]
-    );
-    return { id: result.insertId, nombre, genero };
+// Crear videojuego
+export const createVideogame = async ({ nombre, plataforma_id, nota, anio_lanzamiento }) => {
+    const [game] = await sql`
+        INSERT INTO Videogames (nombre, plataforma_id, nota, anio_lanzamiento)
+        VALUES (${nombre}, ${plataforma_id}, ${nota}, ${anio_lanzamiento})
+        RETURNING *
+    `;
+    return game;
 };
 
-export const actualizarVideogame = async (id, { nombre, genero }) => {
-    await db.query(
-        'UPDATE Videogames SET nombre = ?, genero = ? WHERE id = ?',
-        [nombre, genero, id]
-    );
+// Actualizar videojuego
+export const updateVideogameById = async (id, { nombre, plataforma_id, nota, anio_lanzamiento }) => {
+    const [game] = await sql`
+        UPDATE Videogames
+        SET nombre = ${nombre},
+            plataforma_id = ${plataforma_id},
+            nota = ${nota},
+            anio_lanzamiento = ${anio_lanzamiento}
+        WHERE id = ${id}
+        RETURNING *
+    `;
+    return game;
 };
 
-export const eliminarVideogame = async (id) => {
-    await db.query('DELETE FROM Videogames WHERE id = ?', [id]);
+// Eliminar videojuego
+export const deleteVideogameById = async (id) => {
+    const [deleted] = await sql`
+        DELETE FROM Videogames
+        WHERE id = ${id}
+        RETURNING *
+    `;
+    return deleted;
 };

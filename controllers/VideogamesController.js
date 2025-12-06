@@ -1,53 +1,21 @@
-import {
-    obtenerVideogames,
-    obtenerVideogamePorId,
-    crearVideogame,
-    actualizarVideogame,
-    eliminarVideogame
-} from '../models/VideogameModel.js';
+import * as VideogamesModel from "../models/VideogameModel.js";
 
 export const getVideogames = async (req, res) => {
     try {
-        const Videogames = await obtenerVideogames();
-        res.json(Videogames);
+        const videogames = await VideogamesModel.getAllVideogames();
+        res.json(videogames);
     } catch (error) {
-        res.status(500).json({ error: 'Error al obtener Videogames' });
+        res.status(500).json({ error: error.message });
     }
 };
 
 export const getVideogame = async (req, res) => {
+    const { id } = req.params;
     try {
-        const Videogame = await obtenerVideogamePorId(req.params.id);
-        if (!Videogame) return res.status(404).json({ error: 'Videogame no encontrado' });
-        res.json(Videogame);
+        const game = await VideogamesModel.getVideogameById(id);
+        if (!game) return res.status(404).json({ error: "No encontrado" });
+        res.json(game);
     } catch (error) {
-        res.status(500).json({ error: 'Error al obtener Videogame' });
-    }
-};
-
-export const createVideogame = async (req, res) => {
-    try {
-        const nuevo = await crearVideogame(req.body);
-        res.status(201).json(nuevo);
-    } catch (error) {
-        res.status(500).json({ error: 'Error al crear Videogame' });
-    }
-};
-
-export const updateVideogame = async (req, res) => {
-    try {
-        await actualizarVideogame(req.params.id, req.body);
-        res.json({ message: 'Videogame actualizado correctamente' });
-    } catch (error) {
-        res.status(500).json({ error: 'Error al actualizar Videogame' });
-    }
-};
-
-export const deleteVideogame = async (req, res) => {
-    try {
-        await eliminarVideogame(req.params.id);
-        res.json({ message: 'Videogame eliminado correctamente' });
-    } catch (error) {
-        res.status(500).json({ error: 'Error al eliminar Videogame' });
+        res.status(500).json({ error: error.message });
     }
 };

@@ -1,16 +1,6 @@
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
+import postgres from 'postgres'
 
-dotenv.config();
+const connectionString = "postgresql://postgres.hxksrymblwxgzwoouvip:wRIDryuVL19hi5@aws-1-eu-west-2.pooler.supabase.com:5432/postgres"
+const sql = postgres(connectionString)
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
-
-export default pool;
+export default sql
