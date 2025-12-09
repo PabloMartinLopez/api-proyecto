@@ -29,3 +29,14 @@ export const createVideogame = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const deleteVideogameById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deleted = await VideogamesModel.deleteVideogameById(id);
+        if (!deleted) return res.status(404).json({ error: "No encontrado" });
+        res.json({ message: "Eliminado correctamente" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
