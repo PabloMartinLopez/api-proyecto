@@ -2,7 +2,7 @@ import sql from "../config/db.js";
 
 // Obtener todos los videojuegos
 export const getAllVideogames = async () => {
-    const rows = await sql`SELECT * FROM "Videogames"`;
+    const rows = await sql`SELECT * FROM videogames`;
     return rows;
 };
 
