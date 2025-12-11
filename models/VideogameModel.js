@@ -45,3 +45,13 @@ export const deleteVideogameById = async (id) => {
     `;
     return deleted;
 };
+
+export const updateVideogame = async (id, updatedGame) => {
+    console.log(updatedGame);
+    
+    const { nombre, plataforma_id, nota, anio_lanzamiento } = updatedGame;
+    const [game] = await sql`SELECT * FROM Videogames WHERE id = ${id}`;
+    if (!game) return null
+    const updated = await sql`UPDATE Videogames SET nombre = ${nombre}, plataforma_id = ${plataforma_id}, nota = ${nota}, anio_lanzamiento = ${anio_lanzamiento} WHERE id = ${id} RETURNING *`;
+    return updated[0];
+};

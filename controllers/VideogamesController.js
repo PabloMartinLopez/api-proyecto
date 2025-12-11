@@ -40,3 +40,15 @@ export const deleteVideogameById = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const updateVideogame = async (req, res) => {
+    const { id } = req.params;
+
+    try {    
+        const { nombre, plataforma_id, nota, anio_lanzamiento } = req.body;
+        const updated = await VideogamesModel.updateVideogame(id, { nombre, plataforma_id, nota, anio_lanzamiento });
+        res.json(updated);
+    }catch(error){
+        res.status(500).json({ error: error.message });
+    }
+};
