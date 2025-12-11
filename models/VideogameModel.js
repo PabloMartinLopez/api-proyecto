@@ -22,20 +22,6 @@ export const createVideogame = async ({ nombre, plataforma_id, nota, anio_lanzam
     return game;
 };
 
-// Actualizar videojuego
-export const updateVideogameById = async (id, { nombre, plataforma_id, nota, anio_lanzamiento }) => {
-    const [game] = await sql`
-        UPDATE Videogames
-        SET nombre = ${nombre},
-            plataforma_id = ${plataforma_id},
-            nota = ${nota},
-            anio_lanzamiento = ${anio_lanzamiento}
-        WHERE id = ${id}
-        RETURNING *
-    `;
-    return game;
-};
-
 // Eliminar videojuego
 export const deleteVideogameById = async (id) => {
     const [deleted] = await sql`
@@ -46,9 +32,8 @@ export const deleteVideogameById = async (id) => {
     return deleted;
 };
 
+// Actualizar videojuego por el id
 export const updateVideogame = async (id, updatedGame) => {
-    console.log(updatedGame);
-    
     const { nombre, plataforma_id, nota, anio_lanzamiento } = updatedGame;
     const [game] = await sql`SELECT * FROM Videogames WHERE id = ${id}`;
     if (!game) return null
