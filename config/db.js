@@ -1,6 +1,9 @@
 import postgres from 'postgres'
+import dotenv from 'dotenv'
+dotenv.config()
 
-const connectionString = "postgresql://postgres.hxksrymblwxgzwoouvip:wRIDryuVL19hi5@aws-1-eu-west-2.pooler.supabase.com:5432/postgres"
+const connectionString = process.env.DATABASE_URL
+
 const sql = postgres(connectionString)
 
 export default sql
