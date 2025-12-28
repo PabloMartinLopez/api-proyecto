@@ -35,3 +35,10 @@ export const deleteUserById = async (id) => {
     `;
     return deleted;
 };
+
+export const getUserLogin = async (email, password) => {
+    const [user] = await sql`SELECT id, name, email FROM users WHERE email = ${email} AND password = ${password}`;
+    if (!user) return null
+
+    return user;
+};

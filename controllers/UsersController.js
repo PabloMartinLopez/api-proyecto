@@ -76,3 +76,15 @@ export const deleteUserById = async (req, res) => {
     });
   }
 };
+
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+  
+  const user = await UsersModel.getUserLogin(email, password);
+  console.log(user);
+
+  res.status(200).json({
+    code: 200,
+    user: user,
+  });
+};
