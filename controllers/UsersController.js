@@ -108,3 +108,14 @@ export const login = async (req, res) => {
     });
   }
 };
+
+export const getUserSuggestion = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const ListGames =await UsersModel.getSuggestion(id);
+    
+    res.status(200).json(ListGames);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
