@@ -42,3 +42,10 @@ export const getUserLogin = async (email, password) => {
 
     return user;
 };
+
+export const getUserByUUID = async (uuid) => {
+    const [user] = await sql`SELECT * FROM users WHERE uuid = ${uuid}`;
+    if (!user) return null
+
+    return user;
+};

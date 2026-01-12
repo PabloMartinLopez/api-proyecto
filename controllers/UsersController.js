@@ -81,7 +81,6 @@ export const deleteUserById = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-
   if (!email || !password) {
     return res.status(400).json({
       error: "Email y password son obligatorios",
@@ -97,17 +96,15 @@ export const login = async (req, res) => {
 
     const firebaseUser = userCredential.user;
 
+    const userBd = UsersModel.getUserByUUID(firebaseUser.uid);
+
     return res.status(200).json({
-      uid: firebaseUser.uid,
-      email: firebaseUser.email,
+      user: await userBd,
     });
   } catch (error) {
-    console.error("Error completo de Firebase:", error); // Esto te dirá si es "auth/invalid-api-key" o "auth/user-not-found"
-    console.log(process.env.apiKey);
-
     return res.status(401).json({
       error: "Credenciales inválidas",
-      debug: error.code, // Esto te ayudará a identificar el fallo
+      debug: error.code,
     });
   }
 };
