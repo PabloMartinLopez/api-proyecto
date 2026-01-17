@@ -2,7 +2,9 @@ import sql from "../config/db.js";
 
 // Obtener todos los videojuegos
 export const getAllVideogames = async () => {
-  const rows = await sql`SELECT * FROM videogames`;
+  const rows = await sql`SELECT v.*, c.id AS "idEmpresa", c.name AS "Empresa"
+    FROM videogames v JOIN companies_videogames cv ON v.id = cv.videogame_id
+    JOIN companies c ON cv.company_id = c.id`;
   return rows;
 };
 

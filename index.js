@@ -3,7 +3,9 @@ import cors from 'cors';
 import VideogamesRoutes from "./routes/VideogamesRoutes.js";
 import UserRoutes from "./routes/UsersRoutes.js";
 import PlatformRoutes from "./routes/PlatformsRoutes.js";
+import CompaniesRoutes from "./routes/CompaniesRoutes.js";
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 const app = express();
@@ -19,7 +21,8 @@ app.get('/', async (req, res) => {
 // Rutas principales
 app.use('/api/videogames', VideogamesRoutes);
 app.use('/api/users', UserRoutes);
-app.use('/api/platforms', PlatformRoutes)
+app.use('/api/platforms', PlatformRoutes);
+app.use('/api/companies', CompaniesRoutes);
 
 const PORT = process.env.PORT || 3000;
 
