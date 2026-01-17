@@ -1,8 +1,10 @@
 import express from "express";
-import { getCompanies } from "../controllers/CompaniesController.js";
+import { getCompanies, createCompany} from "../controllers/CompaniesController.js";
 
 const router = express.Router();
 
 router.get("/", getCompanies);
+router.post("/", createCompany);
+
 
 export default router;

@@ -3,8 +3,8 @@ import sql from "../config/db.js";
 // Obtener todos los videojuegos
 export const getAllVideogames = async () => {
   const rows = await sql`SELECT v.*, c.id AS "idEmpresa", c.name AS "Empresa"
-    FROM videogames v JOIN companies_videogames cv ON v.id = cv.videogame_id
-    JOIN companies c ON cv.company_id = c.id`;
+    FROM videogames v LEFT JOIN companies_videogames cv ON v.id = cv.videogame_id
+    LEFT JOIN companies c ON cv.company_id = c.id`;
   return rows;
 };
 
@@ -15,15 +15,11 @@ export const getVideogameById = async (id) => {
 };
 
 // Crear videojuego
-export const createVideogame = async ({
-  nombre,
-  plataforma_id,
-  nota,
-  anio_lanzamiento,
-}) => {
+export const createVideogame = async ({ name, genero, nota }) => {
+  console.log(name, genero, nota);
   const [game] = await sql`
-        INSERT INTO Videogames (nombre, plataforma_id, nota, anio_lanzamiento)
-        VALUES (${nombre}, ${plataforma_id}, ${nota}, ${anio_lanzamiento})
+        INSERT INTO Videogames (name, genre, note)
+        VALUES (${name}, ${genero}, ${nota})
         RETURNING *
     `;
   return game;
@@ -58,4 +54,13 @@ export const getUserGames = async (UserId) => {
     
     WHERE u.id = ${UserId};`;
   return rows;
+};
+
+export const createCompanyVideogame = async (company_id, videogame_id) => {
+  const [relation] = await sql`
+        INSERT INTO companies_videogames (company_id, videogame_id)
+        VALUES (${company_id}, ${videogame_id})
+        RETURNING *
+        `;
+  return relation;
 };
