@@ -29,7 +29,6 @@ export const getUser = async (req, res) => {
 };
 
 export const createUser = async (req, res) => {
-  console.log(req.body);
 
   const { name, email, password } = req.body;
   try {
@@ -66,7 +65,6 @@ export const deleteUserById = async (req, res) => {
     if (!deleted) return res.status(404).json({ error: "No encontrado" });
     res.json({ message: "Eliminado correctamente" });
   } catch (error) {
-    console.log(error.code);
     if (error.code === "23503") {
       res
         .status(500)
@@ -113,6 +111,7 @@ export const getUserSuggestion = async (req, res) => {
   const { id } = req.params;
   try {
     const ListGames =await UsersModel.getSuggestion(id);
+    console.log(ListGames);
     
     res.status(200).json(ListGames);
   } catch (error) {

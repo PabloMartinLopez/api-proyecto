@@ -61,7 +61,7 @@ export const getSuggestion = async (id) => {
                                         JOIN collections_users cu ON u.id = cu.user_id
                                         JOIN collections c ON cu.collection_id = c.id
                                         JOIN collections_videogames cv ON c.id = cv.collection_id
-                                        JOIN videogames v ON cv.videogames_id = v.id
+                                        JOIN videogames v ON cv.videogame_id = v.id
                                 WHERE u.id = 1 ) t
                             ORDER BY RANDOM()
                             LIMIT 5;

@@ -1,4 +1,6 @@
 import * as VideogamesModel from "../models/VideogameModel.js";
+import * as CompanyModel from "../models/CompaniesModel.js";
+import * as CollecionsModel from "../models/CollectionsModel.js";
 
 export const getVideogames = async (req, res) => {
   try {
@@ -21,22 +23,35 @@ export const getVideogame = async (req, res) => {
 };
 
 export const createVideogame = async (req, res) => {
-  const { name, genero, nota, company_id } = req.body;
+  const { name, genero, nota, companyName, collectionName, user_id } = req.body;
+  let game = await VideogamesModel.createVideogame({
+    name,
+    genero,
+    nota,
+  });
+  console.log("----");
 
-  try {
-    // console.log(req.body);
-    const newGame = await VideogamesModel.createVideogame({
-      name,
-      genero,
-      nota,
-    });
-    await VideogamesModel.createCompanyVideogame(company_id, newGame.id);
-    console.log(newGame);
-
-    res.status(201).json(newGame);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  let company = await CompanyModel.getCompanyByName(companyName);
+  if (company.length === 0) {
+    company = await CompanyModel.createCompany({ name: companyName });
   }
+
+  let collection = await CollecionsModel.getCollectionByNameUser(
+    user_id,
+    collectionName,
+  );
+  if (!collection) {
+    collection = await CollecionsModel.createCollection(collectionName, user_id);
+  }
+
+  console.log(game.id);
+  console.log(company);
+  console.log(collection.id);
+  console.log("----");
+
+  await VideogamesModel.linkAllEntities(game, company, collection);
+
+  res.status(201).json({ message: "Videogame creado exitosamente", game, company, collection });
 };
 
 export const deleteVideogameById = async (req, res) => {
@@ -72,6 +87,17 @@ export const getUserGames = async (req, res) => {
   try {
     const games = await VideogamesModel.getUserGames(id);
     res.json(games);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const addCollecion = async (req, res) => {
+  const { collection_id } = req.params;
+  const { game_id } = req.body;
+  try {
+    const result = await VideogamesModel.addCollection(collection_id, game_id);
+    res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

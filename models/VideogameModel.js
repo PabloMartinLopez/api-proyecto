@@ -16,7 +16,6 @@ export const getVideogameById = async (id) => {
 
 // Crear videojuego
 export const createVideogame = async ({ name, genero, nota }) => {
-  console.log(name, genero, nota);
   const [game] = await sql`
         INSERT INTO Videogames (name, genre, note)
         VALUES (${name}, ${genero}, ${nota})
@@ -63,4 +62,35 @@ export const createCompanyVideogame = async (company_id, videogame_id) => {
         RETURNING *
         `;
   return relation;
+};
+
+export const addCollection = async (collection_id) => {
+  const [relation] = await sql`
+        INSERT INTO collections_videogames (collection_id, game_id)
+        VALUES (${collection_id}, ${game_id})
+        RETURNING *
+        `;
+  return relation;
+};
+
+export const linkAllEntities = async (videogame, company, collection) => {
+  console.log("----");
+  console.log(company[0].id || 1);
+  console.log(videogame.id);
+  console.log(collection.id);
+  console.log("----");
+
+  const videogameCompanyLink =
+    await sql` INSERT INTO companies_videogames (company_id, videogame_id)
+        VALUES (${company[0].id || 1}, ${videogame.id})
+        RETURNING *`;
+
+  const videogameCollectionLink =
+    await sql` INSERT INTO collections_videogames (collection_id, videogame_id)
+        VALUES (${collection.id}, ${videogame.id})
+        RETURNING *`;
+
+  console.log(videogameCollectionLink);
+
+  return true;
 };

@@ -5,11 +5,16 @@ export const getAllCompanies = async () => {
   return companies;
 };
 
-export const createCompany = async ({ name, country_id }) => {
-  const [company] = await sql`
-    INSERT INTO companies (name,country_id)
-    VALUES (${name},${country_id})
-    RETURNING *
-    `;
-  return company;
-};
+export const createCompany = async (company) => {
+  const [newCompany] = await sql`
+  INSERT INTO companies (name, country_id)
+  VALUES (${company.name}, 75)
+  RETURNING *
+`;
+  return newCompany;
+}
+
+export const getCompanyByName = async (name) => {
+  const companies = await sql`SELECT * FROM companies WHERE name LIKE ${name}`;  
+  return companies;
+}

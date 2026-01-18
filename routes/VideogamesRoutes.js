@@ -5,7 +5,8 @@ import {
     createVideogame,
     updateVideogame,
     deleteVideogameById,
-    getUserGames
+    getUserGames,
+    addCollecion,
 } from '../controllers/VideogamesController.js';
 
 const router = express.Router();
@@ -17,5 +18,7 @@ router.put('/:id', updateVideogame);
 router.delete('/:id', deleteVideogameById);
 
 router.get('/user/:id', getUserGames);
+
+router.post('/addcollection/:collection_id', addCollecion);
 
 export default router;
