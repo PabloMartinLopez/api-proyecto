@@ -74,11 +74,6 @@ export const addCollection = async (collection_id) => {
 };
 
 export const linkAllEntities = async (videogame, company, collection) => {
-  console.log("----");
-  console.log(company[0].id || 1);
-  console.log(videogame.id);
-  console.log(collection.id);
-  console.log("----");
 
   const videogameCompanyLink =
     await sql` INSERT INTO companies_videogames (company_id, videogame_id)
@@ -89,8 +84,5 @@ export const linkAllEntities = async (videogame, company, collection) => {
     await sql` INSERT INTO collections_videogames (collection_id, videogame_id)
         VALUES (${collection.id}, ${videogame.id})
         RETURNING *`;
-
-  console.log(videogameCollectionLink);
-
   return true;
 };

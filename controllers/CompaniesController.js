@@ -9,21 +9,16 @@ export const getCompanies = async (req, res) => {
 export const createCompany = async (req, res) => {
   const { name } = req.body;
 
-  console.log('➡️ createCompany called with:', name);
-
   try {
     const existingCompanies = await CompaniesModel.getCompaniesByName(name);
-    console.log('🔎 existingCompanies:', existingCompanies);
 
     if (existingCompanies.length === 0) {
       const newCompany = await CompaniesModel.createCompany({ name });
-      console.log('✅ newCompany created:', newCompany);
 
       res.status(201).json({
         company: newCompany,
       });
     } else {
-      console.log('ℹ️ company already exists:', existingCompanies[0]);
 
       res.status(200).json({
         company: existingCompanies[0],

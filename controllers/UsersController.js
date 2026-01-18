@@ -111,7 +111,6 @@ export const getUserSuggestion = async (req, res) => {
   const { id } = req.params;
   try {
     const ListGames =await UsersModel.getSuggestion(id);
-    console.log(ListGames);
     
     res.status(200).json(ListGames);
   } catch (error) {

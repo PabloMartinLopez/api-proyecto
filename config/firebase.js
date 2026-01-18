@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-console.log("API Key cargada:", process.env.apiKey);
+// console.log("API Key cargada:", process.env.apiKey);
 
 const firebaseConfig = {
   apiKey: process.env.apiKey,

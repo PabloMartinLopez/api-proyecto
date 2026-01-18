@@ -29,7 +29,6 @@ export const createVideogame = async (req, res) => {
     genero,
     nota,
   });
-  console.log("----");
 
   let company = await CompanyModel.getCompanyByName(companyName);
   if (company.length === 0) {
@@ -43,11 +42,6 @@ export const createVideogame = async (req, res) => {
   if (!collection) {
     collection = await CollecionsModel.createCollection(collectionName, user_id);
   }
-
-  console.log(game.id);
-  console.log(company);
-  console.log(collection.id);
-  console.log("----");
 
   await VideogamesModel.linkAllEntities(game, company, collection);
 
