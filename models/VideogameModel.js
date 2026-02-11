@@ -49,11 +49,10 @@ export const updateVideogame = async (id, updatedGame) => {
 
 export const getUserGames = async (UserId) => {
   const rows = await sql`SELECT v.*, c.name as Collection
-    FROM videogames v JOIN collections_videogames cv ON v.id = cv.videogames_id
+    FROM videogames v JOIN collections_videogames cv ON v.id = cv.videogame_id
     JOIN collections c ON cv.collection_id = c.id
     JOIN collections_users cu ON cu.collection_id = c.id
     JOIN users u ON u.id = cu.user_id
-    
     WHERE u.id = ${UserId};`;
   return rows;
 };

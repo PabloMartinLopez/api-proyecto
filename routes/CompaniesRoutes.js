@@ -3,9 +3,9 @@ import { getCompanies, createCompany,getCompaniesName} from "../controllers/Comp
 
 const router = express.Router();
 
-router.get("/", getCompanies);
-router.get("/search", getCompaniesName);
-router.post("/", createCompany);
+// router.get("/", getCompanies);
+// router.get("/search", getCompaniesName);
+// router.post("/", createCompany);
 
 
 export default router;

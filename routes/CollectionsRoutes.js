@@ -6,7 +6,7 @@ import {
 
 const router = express.Router();
 
-router.get("/:User_id", getUserCollections);
-router.post("/:User_id", createUserCollection);
+// router.get("/:User_id", getUserCollections);
+// router.post("/:User_id", createUserCollection);
 
 export default router;

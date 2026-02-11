@@ -3,8 +3,8 @@ import {getPlatform, getPlatforms, getPlatformUser} from "../controllers/Platfor
 
 const router = express.Router();
 
-router.get("/", getPlatforms);
+// router.get("/", getPlatforms);
 router.get("/users/:id", getPlatformUser);
-router.get("/:id", getPlatform);
+// router.get("/:id", getPlatform);
 
 export default router;
