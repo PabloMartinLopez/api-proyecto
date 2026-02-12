@@ -6,12 +6,14 @@ import PlatformRoutes from "./routes/PlatformsRoutes.js";
 import CompaniesRoutes from "./routes/CompaniesRoutes.js";
 import CollectionsRoutes from "./routes/CollectionsRoutes.js";
 import dotenv from 'dotenv';
+import morgan from 'morgan';
 
 dotenv.config();
 
 const app = express();
 
 app.use(cors());
+app.use(morgan('dev'));
 app.use(express.json());
 
 // Ruta base

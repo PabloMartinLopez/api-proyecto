@@ -48,50 +48,11 @@ export const createVideogame = async (req, res) => {
   res.status(201).json({ message: "Videogame creado exitosamente", game, company, collection });
 };
 
-export const deleteVideogameById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const deleted = await VideogamesModel.deleteVideogameById(id);
-    if (!deleted) return res.status(404).json({ error: "No encontrado" });
-    res.json({ message: "Eliminado correctamente" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-export const updateVideogame = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const { nombre, plataforma_id, nota, anio_lanzamiento } = req.body;
-    const updated = await VideogamesModel.updateVideogame(id, {
-      nombre,
-      plataforma_id,
-      nota,
-      anio_lanzamiento,
-    });
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 export const getUserGames = async (req, res) => {
   const { id } = req.params;
   try {
     const games = await VideogamesModel.getUserGames(id);
     res.json(games);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-export const addCollecion = async (req, res) => {
-  const { collection_id } = req.params;
-  const { game_id } = req.body;
-  try {
-    const result = await VideogamesModel.addCollection(collection_id, game_id);
-    res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
