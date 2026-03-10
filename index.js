@@ -5,12 +5,16 @@ import UserRoutes from "./routes/UsersRoutes.js";
 import PlatformRoutes from "./routes/PlatformsRoutes.js";
 import CompaniesRoutes from "./routes/CompaniesRoutes.js";
 import CollectionsRoutes from "./routes/CollectionsRoutes.js";
+import HealthRoutes from "./routes/HealthRoutes.js";
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 
 dotenv.config();
 
 const app = express();
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 app.use(cors());
 if (process.env.NODE_ENV !== 'test') {
@@ -29,6 +33,7 @@ app.use('/api/users', UserRoutes);
 app.use('/api/platforms', PlatformRoutes);
 app.use('/api/companies', CompaniesRoutes);
 app.use('/api/collections', CollectionsRoutes);
+app.use('/api/health', HealthRoutes);
 
 const PORT = process.env.PORT || 3000;
 

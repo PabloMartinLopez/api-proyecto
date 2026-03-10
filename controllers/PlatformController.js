@@ -12,3 +12,16 @@ export const getPlatformUser = async (req, res) => {
     });
   }
 };
+
+export const getAllPlatforms = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const platforms = await PlatformModel.getAllPlatforms(id);
+    res.json(platforms);
+  } catch (error) {
+    res.status(500).json({
+      code: error.code,
+      error: error.message,
+    });
+  }
+}

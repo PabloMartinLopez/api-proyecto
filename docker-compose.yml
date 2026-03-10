@@ -3,11 +3,15 @@ version: '3.8'
 services:
   api:
     build: .
-    container_name: api-buhardilla
+    container_name: api-proyecto
     ports:
       - "3000:3000"
     env_file:
       - .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:@host.docker.internal:5432/proyecto
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
     # Descomentar si quieres que Docker 
     # levante también la base de datos de PostgreSQL

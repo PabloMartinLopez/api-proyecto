@@ -23,11 +23,12 @@ export const getVideogame = async (req, res) => {
 };
 
 export const createVideogame = async (req, res) => {
-  const { name, genero, nota, companyName, collectionName, user_id } = req.body;
+  const { name, genero, nota, companyName, collectionName, user_id, cover } = req.body;
   let game = await VideogamesModel.createVideogame({
     name,
     genero,
     nota,
+    cover,
   });
 
   let company = await CompanyModel.getCompanyByName(companyName);
