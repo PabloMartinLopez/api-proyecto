@@ -24,7 +24,8 @@ vi.mock('../models/UserModel.js', () => ({
         }
         return Promise.resolve(null);
     }),
-    getSuggestion: vi.fn().mockResolvedValue([{ id: 1, name: 'Zelda' }])
+    getSuggestion: vi.fn().mockResolvedValue([{ id: 1, name: 'Zelda' }]),
+    getAllUsers: vi.fn().mockResolvedValue([{ id: 1, name: 'Pepe' }])
 }));
 
 describe('Users API', () => {
@@ -60,5 +61,12 @@ describe('Users API', () => {
         expect(res.status).toBe(200);
         expect(Array.isArray(res.body)).toBeTruthy();
         expect(res.body[0]).toHaveProperty('name', 'Zelda');
+    });
+
+    it('GET /api/users should return all users name', async () => {
+        const res = await request(app).get('/api/users');
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body)).toBeTruthy();
+        expect(res.body[0]).toHaveProperty('name');
     });
 });

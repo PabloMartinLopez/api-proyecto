@@ -1,7 +1,7 @@
 import sql from "../config/db.js";
 
 export const getAllUsers = async () => {
-  const users = await sql`SELECT * FROM users`;
+  const users = await sql`SELECT id, name FROM users`;
   return users;
 };
 
