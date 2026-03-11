@@ -25,3 +25,16 @@ export const getAllPlatforms = async (req, res) => {
     });
   }
 }
+
+export const createPlatform = async (req, res) => {
+  const { name } = req.body;
+  try {
+    const platform = await PlatformModel.createPlatform({ name });
+    res.status(201).json(platform);
+  } catch (error) {
+    res.status(500).json({
+      code: error.code,
+      error: error.message,
+    });
+  }
+}

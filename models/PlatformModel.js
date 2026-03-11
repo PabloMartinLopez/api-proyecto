@@ -17,3 +17,8 @@ export const getPlatformUser = async (id) => {
     WHERE u.id = ${id}`;
   return Platform;
 };
+
+export const createPlatform = async ({ name }) => {
+  const [platform] = await sql`INSERT INTO platforms (name) VALUES (${name}) RETURNING *`;
+  return platform;
+};

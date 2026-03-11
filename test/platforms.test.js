@@ -8,6 +8,9 @@ vi.mock('../models/PlatformModel.js', () => ({
             return Promise.resolve([{ id: 1, name: 'PC' }, { id: 2, name: 'PS5' }]);
         }
         return Promise.resolve([]);
+    }),
+    createPlatform: vi.fn().mockImplementation(async (data) => {
+        return { id: 3, name: data.name };
     })
 }));
 
@@ -24,5 +27,11 @@ describe('Platforms API', () => {
         const res = await request(app).get('/api/platforms/users/99');
         expect(res.status).toBe(200);
         expect(res.body).toEqual([]);
+    });
+
+    it('POST /api/platforms should create a new platform', async () => {
+        const res = await request(app).post('/api/platforms').send({ name: 'asd' });
+        expect(res.status).toBe(201);
+        expect(res.body).toHaveProperty('name', 'asd');
     });
 });

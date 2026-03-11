@@ -32,6 +32,7 @@ api-proyecto/
 
 ### Platforms (`/api/platforms`)
 - `GET /users/:id` - Obtiene la lista de plataformas asociadas a un usuario en específico.
+- `POST /` - Crea una nueva plataforma.
 
 ### Companies (`/api/companies`)
 - `GET /` - Obtiene la lista completa de compañías de videojuegos registradas.
