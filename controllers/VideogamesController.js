@@ -23,30 +23,28 @@ export const getVideogame = async (req, res) => {
 };
 
 export const createVideogame = async (req, res) => {
-  const { name, genero, nota, companyName, collectionName, user_id, cover } = req.body;
-  let game = await VideogamesModel.createVideogame({
-    name,
-    genero,
-    nota,
-    cover,
-  });
+  const { name, genero, nota, companyId, collectionId, user_id, cover } = req.body;
+  console.log(req.body);
 
-  let company = await CompanyModel.getCompanyByName(companyName);
-  if (company.length === 0) {
-    company = await CompanyModel.createCompany({ name: companyName });
+  try {
+    let game = await VideogamesModel.createVideogame({
+      name,
+      genero,
+      nota,
+      cover,
+    });
+
+    // Como ahora recibimos los IDs, creamos objetos con la estructura
+    // esperada por linkAllEntities originariamente para mantener compatibilidad
+    let company = [{ id: companyId || 1 }];
+    let collection = { id: collectionId };
+
+    await VideogamesModel.linkAllEntities(game, company, collection);
+
+    res.status(201).json({ message: "Videogame creado exitosamente", game, companyId, collectionId });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-  let collection = await CollecionsModel.getCollectionByNameUser(
-    user_id,
-    collectionName,
-  );
-  if (!collection) {
-    collection = await CollecionsModel.createCollection(collectionName, user_id);
-  }
-
-  await VideogamesModel.linkAllEntities(game, company, collection);
-
-  res.status(201).json({ message: "Videogame creado exitosamente", game, company, collection });
 };
 
 export const getUserGames = async (req, res) => {
