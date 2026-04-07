@@ -33,6 +33,17 @@ export const getVideogameById = async (id) => {
   return result[0];
 };
 
+// Obtener videojuego por nombre
+export const getVideogameByName = async (name) => {
+  const result = await sql`
+    SELECT *
+    FROM videogames
+    WHERE LOWER(name) = LOWER(${name})
+    LIMIT 1
+  `;
+  return result[0];
+};
+
 // Crear videojuego
 export const createVideogame = async ({ name, genero, nota, cover }) => {
   const finalNota = (nota === '') ? null : nota;
@@ -115,6 +126,7 @@ export const linkAllEntities = async (videogame, company, collection, platform, 
     const videogamePlatformLink =
       await sql` INSERT INTO platforms_videogames (platform_id, videogame_id)
           VALUES (${platform.id}, ${videogame.id})
+          ON CONFLICT DO NOTHING
           RETURNING *`;
           
     // También registramos que el usuario tiene esta plataforma (si no la tenía ya)
