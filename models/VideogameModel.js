@@ -2,26 +2,46 @@ import sql from "../config/db.js";
 
 // Obtener todos los videojuegos
 export const getAllVideogames = async () => {
-  const rows = await sql`SELECT v.* , c.id AS "idEmpresa", c.name AS "Empresa"
-    FROM videogames v LEFT JOIN companies_videogames cv ON v.id = cv.videogame_id
-    LEFT JOIN companies c ON cv.company_id = c.id`;
+  const rows = await sql`
+    SELECT v.*, 
+           c.id AS "idEmpresa", c.name AS "Empresa",
+           COALESCE(json_agg(json_build_object('id', p.id, 'name', p.name)) FILTER (WHERE p.id IS NOT NULL), '[]') AS platforms
+    FROM videogames v 
+    LEFT JOIN companies_videogames cv ON v.id = cv.videogame_id
+    LEFT JOIN companies c ON cv.company_id = c.id
+    LEFT JOIN platforms_videogames pv ON v.id = pv.videogame_id
+    LEFT JOIN platforms p ON pv.platform_id = p.id
+    GROUP BY v.id, c.id, c.name
+  `;
   return rows;
 };
 
 // Obtener videojuego por ID
 export const getVideogameById = async (id) => {
-  const result = await sql`SELECT v.* , c.id AS "idEmpresa", c.name AS "Empresa"
-    FROM videogames v LEFT JOIN companies_videogames cv ON v.id = cv.videogame_id
+  const result = await sql`
+    SELECT v.*, 
+           c.id AS "idEmpresa", c.name AS "Empresa",
+           COALESCE(json_agg(json_build_object('id', p.id, 'name', p.name)) FILTER (WHERE p.id IS NOT NULL), '[]') AS platforms
+    FROM videogames v 
+    LEFT JOIN companies_videogames cv ON v.id = cv.videogame_id
     LEFT JOIN companies c ON cv.company_id = c.id
-    WHERE v.id = ${id}`;
+    LEFT JOIN platforms_videogames pv ON v.id = pv.videogame_id
+    LEFT JOIN platforms p ON pv.platform_id = p.id
+    WHERE v.id = ${id}
+    GROUP BY v.id, c.id, c.name
+  `;
   return result[0];
 };
 
 // Crear videojuego
 export const createVideogame = async ({ name, genero, nota, cover }) => {
+  const finalNota = (nota === '') ? null : nota;
+  const finalCover = (cover === '') ? null : cover;
+  const finalGenero = (genero === '') ? null : genero;
+
   const [game] = await sql`
         INSERT INTO Videogames (name, genre, note, cover)
-        VALUES (${name}, ${genero}, ${nota}, ${cover})
+        VALUES (${name}, ${finalGenero ?? null}, ${finalNota ?? null}, ${finalCover ?? null})
         RETURNING *
     `;
   return game;
@@ -75,16 +95,34 @@ export const addCollection = async (collection_id) => {
   return relation;
 };
 
-export const linkAllEntities = async (videogame, company, collection) => {
+export const linkAllEntities = async (videogame, company, collection, platform, user_id) => {
 
-  const videogameCompanyLink =
-    await sql` INSERT INTO companies_videogames (company_id, videogame_id)
-        VALUES (${company[0].id || 1}, ${videogame.id})
-        RETURNING *`;
+  if (company && company[0]) {
+    const videogameCompanyLink =
+      await sql` INSERT INTO companies_videogames (company_id, videogame_id)
+          VALUES (${company[0].id || 1}, ${videogame.id})
+          RETURNING *`;
+  }
 
-  const videogameCollectionLink =
-    await sql` INSERT INTO collections_videogames (collection_id, videogame_id)
-        VALUES (${collection.id}, ${videogame.id})
-        RETURNING *`;
+  if (collection && collection.id) {
+    const videogameCollectionLink =
+      await sql` INSERT INTO collections_videogames (collection_id, videogame_id)
+          VALUES (${collection.id}, ${videogame.id})
+          RETURNING *`;
+  }
+
+  if (platform && platform.id) {
+    const videogamePlatformLink =
+      await sql` INSERT INTO platforms_videogames (platform_id, videogame_id)
+          VALUES (${platform.id}, ${videogame.id})
+          RETURNING *`;
+          
+    // También registramos que el usuario tiene esta plataforma (si no la tenía ya)
+    if (user_id) {
+      await sql` INSERT INTO platforms_users (platform_id, user_id)
+          VALUES (${platform.id}, ${user_id})
+          ON CONFLICT (platform_id, user_id) DO NOTHING`;
+    }
+  }
   return true;
 };

@@ -5,6 +5,7 @@ import UserRoutes from "./routes/UsersRoutes.js";
 import PlatformRoutes from "./routes/PlatformsRoutes.js";
 import CompaniesRoutes from "./routes/CompaniesRoutes.js";
 import CollectionsRoutes from "./routes/CollectionsRoutes.js";
+import ConsultasRoutes from "./routes/ConsultasRoutes.js";
 import HealthRoutes from "./routes/HealthRoutes.js";
 import dotenv from 'dotenv';
 import morgan from 'morgan';
@@ -33,6 +34,7 @@ app.use('/api/users', UserRoutes);
 app.use('/api/platforms', PlatformRoutes);
 app.use('/api/companies', CompaniesRoutes);
 app.use('/api/collections', CollectionsRoutes);
+app.use('/api/search', ConsultasRoutes);
 app.use('/api/health', HealthRoutes);
 
 const PORT = process.env.PORT || 3000;

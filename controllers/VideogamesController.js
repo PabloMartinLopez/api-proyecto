@@ -23,8 +23,13 @@ export const getVideogame = async (req, res) => {
 };
 
 export const createVideogame = async (req, res) => {
-  const { name, genero, nota, companyId, collectionId, user_id, cover } = req.body;
+  const { name, genero, nota, companyId, collectionId, platformId, plataforma_id, user_id, cover } = req.body;
+  const finalPlatformId = platformId || plataforma_id;
+  
+  // Imprimos los valores concretos recibidos para facilitar la depuración
+  console.log("=== PARÁMETROS RECIBIDOS MIENTRAS SE CREABA EL JUEGO ===");
   console.log(req.body);
+  console.log("=========================================================");
 
   try {
     let game = await VideogamesModel.createVideogame({
@@ -34,15 +39,18 @@ export const createVideogame = async (req, res) => {
       cover,
     });
 
-    // Como ahora recibimos los IDs, creamos objetos con la estructura
-    // esperada por linkAllEntities originariamente para mantener compatibilidad
-    let company = [{ id: companyId || 1 }];
-    let collection = { id: collectionId };
+    // Sanitizamos los IDs que pueden venir como string 'null' o '0' desde el frontend
+    const sanitizeId = (id) => (id === 'null' || id === '0' || id === 0 || !id) ? null : id;
 
-    await VideogamesModel.linkAllEntities(game, company, collection);
+    let company = [{ id: sanitizeId(companyId) || 1 }];
+    let collection = { id: sanitizeId(collectionId) };
+    let platform = { id: sanitizeId(finalPlatformId) };
 
-    res.status(201).json({ message: "Videogame creado exitosamente", game, companyId, collectionId });
+    await VideogamesModel.linkAllEntities(game, company, collection, platform, user_id);
+
+    res.status(201).json({ message: "Videogame creado exitosamente", game, companyId, collectionId, platformId: finalPlatformId });
   } catch (error) {
+    console.error("CREATE VIDEOGAME ERROR:", error);
     res.status(500).json({ error: error.message });
   }
 };
