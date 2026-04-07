@@ -1,7 +1,6 @@
 import * as VideogamesModel from "../models/VideogameModel.js";
 import * as CompanyModel from "../models/CompaniesModel.js";
 import * as CollecionsModel from "../models/CollectionsModel.js";
-import * as GameModel from "../models/GameModel.js";
 
 export const getVideogames = async (req, res) => {
   try {
@@ -17,10 +16,6 @@ export const getVideogame = async (req, res) => {
   try {
     const game = await VideogamesModel.getVideogameById(id);
     if (!game) return res.status(404).json({ error: "No encontrado" });
-    
-    const reviews = await GameModel.getCommentsByVideogame(id);
-    game.reviews = reviews;
-    
     res.json(game);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -30,7 +25,7 @@ export const getVideogame = async (req, res) => {
 export const createVideogame = async (req, res) => {
   const { id, name, genero, nota, companyId, collectionId, platformId, plataforma_id, user_id, cover } = req.body;
   const finalPlatformId = platformId || plataforma_id;
-  
+
   // Imprimos los valores concretos recibidos para facilitar la depuración
   console.log("=== PARÁMETROS RECIBIDOS MIENTRAS SE CREABA EL JUEGO ===");
   console.log(req.body);
@@ -39,7 +34,7 @@ export const createVideogame = async (req, res) => {
   try {
     let game;
     let company;
-    
+
     // Sanitizamos los IDs que pueden venir como string 'null' o '0' desde el frontend
     const sanitizeId = (id) => (id === 'null' || id === '0' || id === 0 || !id) ? null : id;
 
