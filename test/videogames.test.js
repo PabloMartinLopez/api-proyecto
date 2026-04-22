@@ -6,10 +6,13 @@ import app from '../index.js';
 vi.mock('../models/VideogameModel.js', () => ({
     getAllVideogames: vi.fn().mockResolvedValue([{ id: 1, name: 'Zelda' }]),
     getVideogameById: vi.fn().mockImplementation((id) => {
-        if (id === '1') return Promise.resolve({ id: 1, name: 'Zelda' });
+        if (id === '1' || id === 1) return Promise.resolve({ id: 1, name: 'Zelda' });
         return Promise.resolve(null);
     }),
-    createVideogame: vi.fn().mockResolvedValue({ id: 2, name: 'Mario', genero: 'plataformas', nota: 10 }),
+    getVideogameByName: vi.fn().mockImplementation((name) => {
+        if (name === 'Zelda') return Promise.resolve({ id: 1, name: 'Zelda' });
+        return Promise.resolve(null);
+    }),
     linkAllEntities: vi.fn().mockResolvedValue(true),
     getUserGames: vi.fn().mockResolvedValue([{ id: 1, name: 'Zelda' }])
 }));
@@ -21,7 +24,11 @@ vi.mock('../models/CompaniesModel.js', () => ({
 
 vi.mock('../models/CollectionsModel.js', () => ({
     getCollectionByNameUser: vi.fn().mockResolvedValue({ id: 1, name: 'Favoritos' }),
-    createCollection: vi.fn().mockResolvedValue({ id: 1, name: 'Favoritos' })
+    createCollection: vi.fn().mockResolvedValue({ id: 1, name: 'Favoritos' }),
+    getCollectionById: vi.fn().mockImplementation((id) => {
+        if (id === '1' || id === 1) return Promise.resolve({ id: 1, name: 'Favoritos' });
+        return Promise.resolve(null);
+    })
 }));
 
 
@@ -44,20 +51,42 @@ describe('Videogames API', () => {
         expect(res.status).toBe(404);
     });
 
-    it('POST /api/videogames should create a videogame', async () => {
+    it('POST /api/videogames should link an existing videogame', async () => {
+        const res = await request(app)
+            .post('/api/videogames')
+            .send({
+                name: 'Zelda',
+                collectionId: 1,
+                platformId: 1,
+                user_id: 1
+            });
+        expect(res.status).toBe(201);
+        expect(res.body.message).toBe('Videogame vinculado exitosamente');
+        expect(res.body.game).toHaveProperty('name', 'Zelda');
+    });
+
+    it('POST /api/videogames should return 404 if videogame does not exist', async () => {
         const res = await request(app)
             .post('/api/videogames')
             .send({
                 name: 'Mario',
-                genero: 'plataformas',
-                nota: 10,
-                companyName: 'Nintendo',
-                collectionName: 'Favoritos',
+                collectionId: 1,
                 user_id: 1
             });
-        expect(res.status).toBe(201);
-        expect(res.body.message).toBe('Videogame creado exitosamente');
-        expect(res.body.game).toHaveProperty('name', 'Mario');
+        expect(res.status).toBe(404);
+        expect(res.body.error).toBe('El videojuego no existe. No se puede insertar.');
+    });
+
+    it('POST /api/videogames should return 404 if collection does not exist', async () => {
+        const res = await request(app)
+            .post('/api/videogames')
+            .send({
+                name: 'Zelda',
+                collectionId: 999,
+                user_id: 1
+            });
+        expect(res.status).toBe(404);
+        expect(res.body.error).toBe('La colección no existe.');
     });
 
     it('GET /api/videogames/user/:id should return a list of user videogames', async () => {

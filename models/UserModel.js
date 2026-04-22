@@ -68,3 +68,27 @@ export const getSuggestion = async (id) => {
                         `;
   return games;
 };
+
+export const toggleFollowUser = async (followerId, followedId) => {
+  // Check if they already follow each other
+  const [existingFollow] = await sql`
+    SELECT * FROM user_followers 
+    WHERE follower_id = ${followerId} AND followed_id = ${followedId}
+  `;
+
+  if (existingFollow) {
+    // Unfollow
+    await sql`
+      DELETE FROM user_followers 
+      WHERE follower_id = ${followerId} AND followed_id = ${followedId}
+    `;
+    return { followed: false };
+  } else {
+    // Follow
+    await sql`
+      INSERT INTO user_followers (follower_id, followed_id) 
+      VALUES (${followerId}, ${followedId})
+    `;
+    return { followed: true };
+  }
+};

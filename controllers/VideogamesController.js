@@ -23,22 +23,17 @@ export const getVideogame = async (req, res) => {
 };
 
 export const createVideogame = async (req, res) => {
-  const { id, name, genero, nota, companyId, collectionId, platformId, plataforma_id, user_id, cover } = req.body;
+  const { id, name, collectionId, platformId, plataforma_id, user_id } = req.body;
   const finalPlatformId = platformId || plataforma_id;
-
-  // Imprimos los valores concretos recibidos para facilitar la depuración
-  console.log("=== PARÁMETROS RECIBIDOS MIENTRAS SE CREABA EL JUEGO ===");
-  console.log(req.body);
-  console.log("=========================================================");
 
   try {
     let game;
-    let company;
 
     // Sanitizamos los IDs que pueden venir como string 'null' o '0' desde el frontend
     const sanitizeId = (id) => (id === 'null' || id === '0' || id === 0 || !id) ? null : id;
 
-    let collection = { id: sanitizeId(collectionId) };
+    const sanitizedCollectionId = sanitizeId(collectionId);
+    let collection = { id: sanitizedCollectionId };
     let platform = { id: sanitizeId(finalPlatformId) };
 
     if (id) {
@@ -47,21 +42,22 @@ export const createVideogame = async (req, res) => {
       game = await VideogamesModel.getVideogameByName(name);
     }
 
-    if (game) {
-      company = null; // Los datos de empresa se omiten para un juego que ya existe
-    } else {
-      game = await VideogamesModel.createVideogame({
-        name,
-        genero,
-        nota,
-        cover,
-      });
-      company = [{ id: sanitizeId(companyId) || 1 }];
+    if (!game) {
+      return res.status(404).json({ error: "El videojuego no existe. No se puede insertar." });
     }
 
-    await VideogamesModel.linkAllEntities(game, company, collection, platform, user_id);
+    if (sanitizedCollectionId) {
+      const targetCollection = await CollecionsModel.getCollectionById(sanitizedCollectionId);
+      if (!targetCollection) {
+        return res.status(404).json({ error: "La colección no existe." });
+      }
+    } else {
+      return res.status(400).json({ error: "Se requiere una colección para insertar el juego." });
+    }
 
-    res.status(201).json({ message: id ? "Videogame vinculado exitosamente" : "Videogame creado exitosamente", game, companyId, collectionId, platformId: finalPlatformId });
+    await VideogamesModel.linkAllEntities(game, collection, platform, user_id);
+
+    res.status(201).json({ message: "Videogame vinculado exitosamente", game, collectionId: sanitizedCollectionId, platformId: finalPlatformId });
   } catch (error) {
     console.error("CREATE VIDEOGAME ERROR:", error);
     res.status(500).json({ error: error.message });

@@ -5,6 +5,11 @@ export const getAllCollections = async () => {
   return Collections;
 };
 
+export const getCollectionById = async (id) => {
+  const [collection] = await sql`SELECT * FROM Collections WHERE id = ${id}`;
+  return collection;
+};
+
 export const createCollection = async (name, user_id) => {
   const [newCollection] = await sql`
     INSERT INTO Collections (name)

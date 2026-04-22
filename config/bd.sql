@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS platforms_users CASCADE;
 DROP TABLE IF EXISTS collections CASCADE;
 
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS user_followers CASCADE;
 
 DROP TABLE IF EXISTS videogames CASCADE;
 
@@ -681,6 +682,13 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     name VARCHAR(100),
     uuid VARCHAR(100) UNIQUE
+);
+
+CREATE TABLE user_followers (
+    follower_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    followed_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (follower_id, followed_id)
 );
 
 INSERT INTO

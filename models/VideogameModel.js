@@ -54,19 +54,7 @@ export const getVideogameByName = async (name) => {
   return result[0];
 };
 
-// Crear videojuego
-export const createVideogame = async ({ name, genero, nota, cover }) => {
-  const finalNota = (nota === '') ? null : nota;
-  const finalCover = (cover === '') ? null : cover;
-  const finalGenero = (genero === '') ? null : genero;
 
-  const [game] = await sql`
-        INSERT INTO Videogames (name, genre, note, cover)
-        VALUES (${name}, ${finalGenero ?? null}, ${finalNota ?? null}, ${finalCover ?? null})
-        RETURNING *
-    `;
-  return game;
-};
 
 // Eliminar videojuego
 export const deleteVideogameById = async (id) => {
@@ -98,32 +86,8 @@ export const getUserGames = async (UserId) => {
   return rows;
 };
 
-export const createCompanyVideogame = async (company_id, videogame_id) => {
-  const [relation] = await sql`
-        INSERT INTO companies_videogames (company_id, videogame_id)
-        VALUES (${company_id}, ${videogame_id})
-        RETURNING *
-        `;
-  return relation;
-};
 
-export const addCollection = async (collection_id) => {
-  const [relation] = await sql`
-        INSERT INTO collections_videogames (collection_id, game_id)
-        VALUES (${collection_id}, ${game_id})
-        RETURNING *
-        `;
-  return relation;
-};
-
-export const linkAllEntities = async (videogame, company, collection, platform, user_id) => {
-
-  if (company && company[0]) {
-    const videogameCompanyLink =
-      await sql` INSERT INTO companies_videogames (company_id, videogame_id)
-          VALUES (${company[0].id || 1}, ${videogame.id})
-          RETURNING *`;
-  }
+export const linkAllEntities = async (videogame, collection, platform, user_id) => {
 
   if (collection && collection.id) {
     const videogameCollectionLink =

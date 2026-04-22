@@ -14,7 +14,7 @@ export const login = async (req, res) => {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
 
     const firebaseUser = userCredential.user;
@@ -47,6 +47,42 @@ export const getAllUsers = async (req, res) => {
   try {
     const users = await UsersModel.getAllUsers();
     res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getUserById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await UsersModel.getUserById(id);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const toggleFollow = async (req, res) => {
+  const { id: followedId } = req.params;
+  const { follower_id: followerId } = req.body;
+
+  if (!followerId || !followedId) {
+    return res.status(400).json({ error: "Faltan datos: se requiere follower_id en el body y el id a seguir en la URL" });
+  }
+
+  // Comprobar que no se intenta seguir a sí mismo
+  if (followerId == followedId) {
+    return res.status(400).json({ error: "No puedes seguirte a ti mismo" });
+  }
+
+  try {
+    const result = await UsersModel.toggleFollowUser(followerId, followedId);
+    
+    if (result.followed) {
+      res.status(201).json({ message: "Usuario seguido correctamente", followed: true });
+    } else {
+      res.status(200).json({ message: "Usuario dejado de seguir correctamente", followed: false });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
