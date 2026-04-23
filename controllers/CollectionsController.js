@@ -15,10 +15,10 @@ export const getUserCollections = async (req, res) => {
 };
 
 export const createCollection = async (req, res) => {
-  const { name, user_id } = req.body;
+  const { nombre, id_jugador } = req.body;
 
   try {
-    const newCollection = await collectionModel.createCollection(name, user_id);
+    const newCollection = await collectionModel.createCollection(nombre, id_jugador);
     res.status(201).json(newCollection);
   } catch (error) {
     res.status(500).json({

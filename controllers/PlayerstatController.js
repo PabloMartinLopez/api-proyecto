@@ -5,9 +5,11 @@ export const getPlayerStats = async (req, res) => {
         const { id } = req.params;
         const stats = await PlayerstatModel.getStatsByUser(id);
         
-        // Ensure values are numbers
-        const total_games = stats.total_games ? parseInt(stats.total_games, 10) : 0;
-        const total_hours = stats.total_hours ? parseFloat(stats.total_hours) : 0;
+        let total_games = Number(stats?.total_games);
+        if (isNaN(total_games)) total_games = 0;
+
+        let total_hours = Number(stats?.total_hours);
+        if (isNaN(total_hours)) total_hours = 0;
 
         res.status(200).json({
             total_games,
