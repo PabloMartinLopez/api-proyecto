@@ -53,19 +53,18 @@ export const getUserByUUID = async (uuid) => {
 };
 
 export const getSuggestion = async (id) => {
-  //TODO: Controlar los juegos que ya haya jugado
-  const games = await sql`SELECT *
-                            FROM (
-                                SELECT DISTINCT v.id, v.*
-                                    FROM users u
-                                        JOIN collections_users cu ON u.id = cu.user_id
-                                        JOIN collections c ON cu.collection_id = c.id
-                                        JOIN collections_videogames cv ON c.id = cv.collection_id
-                                        JOIN videogames v ON cv.videogame_id = v.id
-                                WHERE u.id = ${id} ) t
-                            ORDER BY RANDOM()
-                            LIMIT 5;
-                        `;
+  const games = await sql`
+    SELECT DISTINCT v.*
+    FROM videogames v
+    JOIN collections_videogames cv ON v.id = cv.videogames_id
+    JOIN collections_users cu ON cv.collection_id = cu.collection_id
+    WHERE cu.user_id = ${id}
+      AND v.id NOT IN (
+        SELECT videogame_id 
+        FROM games 
+        WHERE user_id = ${id}
+      )
+  `;
   return games;
 };
 

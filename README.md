@@ -23,14 +23,18 @@ api-proyecto/
 ### Videogames (`/api/videogames`)
 - `GET /` - Obtiene todos los videojuegos disponibles.
 - `GET /:id` - Obtiene los detalles de un videojuego específico por su ID.
-- `POST /` - Crea un nuevo videojuego, añadiendo opcionalmente su compañía y colección.
 - `GET /user/:id` - Obtiene la lista de videojuegos asociados a un usuario específico.
+- `POST /` - Crea un nuevo videojuego, añadiendo opcionalmente su compañía y colección.
 
 ### Users (`/api/users`)
-- `POST /login` - Autentica a un usuario usando credenciales de Firebase (`email` y `password`) y devuelve los datos del usuario.
+- `GET /` - Obtiene todos los usuarios registrados.
+- `GET /:id` - Obtiene los detalles de un usuario específico por su ID.
 - `GET /:id/suggestion` - Obtiene listas de juegos sugeridos para el usuario.
+- `POST /:id/follow` - Alterna el estado de seguimiento entre usuarios (seguir/dejar de seguir).
+- `POST /login` - Autentica a un usuario usando credenciales de Firebase (`email` y `password`) y devuelve los datos del usuario.
 
 ### Platforms (`/api/platforms`)
+- `GET /` - Obtiene todas las plataformas disponibles.
 - `GET /users/:id` - Obtiene la lista de plataformas asociadas a un usuario en específico.
 - `POST /` - Crea una nueva plataforma.
 
@@ -39,6 +43,21 @@ api-proyecto/
 
 ### Collections (`/api/collections`)
 - `GET /:User_id` - Obtiene las colecciones de videojuegos asociadas a un usuario en específico.
+- `POST /` - Crea una nueva colección.
+
+### Search (`/api/search`)
+- `GET /` - Realiza búsquedas de elementos en la base de datos.
+
+### Game (`/api/game`)
+- `GET /:videogame_id` - Obtiene los comentarios y detalles de un videojuego específico.
+- `GET /user/:user_id` - Obtiene los comentarios y juegos asociados a un usuario.
+- `POST /:videogame_id` - Crea o añade una interacción (juego/comentario) para un videojuego específico.
+
+### Player Statistics (`/api/Playerstat`)
+- `GET /:id` - Obtiene las estadísticas (horas jugadas, número de juegos, etc.) de un jugador.
+
+### Health (`/api/health`)
+- `GET /` - Endpoint de verificación del estado y conectividad de la API.
 
 ## Configuración y Ejecución Local
 
