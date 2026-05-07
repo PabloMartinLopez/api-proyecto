@@ -45,11 +45,11 @@ export const getVideogameById = async (id) => {
 
 // Crear un nuevo videojuego
 export const createVideogame = async (videogame) => {
-  const { nombre, genero, nota, portada, id_compania, plataformas } = videogame;
+  const { nombre, genero, nota, portada, id_compania, plataformas, descripcion } = videogame;
 
   const [newVideogame] = await sql`
-    INSERT INTO videogames (name, genre, note, cover)
-    VALUES (${nombre}, ${genero}, ${nota || null}, ${portada || ''})
+    INSERT INTO videogames (name, genre, note, cover, descripcion)
+    VALUES (${nombre}, ${genero}, ${nota || null}, ${portada || ''}, ${descripcion || null})
     RETURNING *
   `;
 
