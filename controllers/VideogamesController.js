@@ -23,13 +23,14 @@ export const getVideogame = async (req, res) => {
 };
 
 export const createVideogame = async (req, res) => {
-  const { nombre, genero, id_compania, nota, portada } = req.body;
+  const { nombre, genero, id_compania, plataformas, nota, portada } = req.body;
 
-  try{
+  try {
     const newVideogame = await VideogamesModel.createVideogame({
       nombre,
       genero,
       id_compania,
+      plataformas,
       nota,
       portada
     });

@@ -5,15 +5,37 @@ export const getAllUsers = async () => {
   return users;
 };
 
-export const getUserById = async (id) => {
-  const user = await sql`SELECT * FROM users WHERE id = ${id}`;
-  return user[0];
+export const getUserById = async (id, currentUserId = null) => {
+  const user = await sql`
+    SELECT 
+      u.*,
+      (SELECT COUNT(*) FROM user_followers WHERE followed_id = u.id)::int as followers_count,
+      (SELECT COUNT(*) FROM user_followers WHERE follower_id = u.id)::int as following_count
+    FROM users u 
+    WHERE u.id = ${id}
+  `;
+
+  if (!user[0]) return null;
+
+  const userData = user[0];
+
+  if (currentUserId) {
+    const [isFollowing] = await sql`
+      SELECT 1 FROM user_followers 
+      WHERE follower_id = ${currentUserId} AND followed_id = ${id}
+    `;
+    userData.is_following = !!isFollowing;
+  } else {
+    userData.is_following = false;
+  }
+
+  return userData;
 };
 
 export const createUser = async (user) => {
   const [newUser] = await sql`
-        INSERT INTO users (name, email, password)
-        VALUES (${user.name}, ${user.email}, ${user.password})
+        INSERT INTO users (name, email, password, uuid)
+        VALUES (${user.name}, ${user.email}, ${user.password}, ${user.uuid})
         RETURNING *
     `;
   return newUser;
@@ -54,16 +76,16 @@ export const getUserByUUID = async (uuid) => {
 
 export const getSuggestion = async (id) => {
   const games = await sql`
-    SELECT DISTINCT v.*
-    FROM videogames v
-    JOIN collections_videogames cv ON v.id = cv.videogames_id
+    SELECT vg.*
+FROM
+    collections_videogames cv
     JOIN collections_users cu ON cv.collection_id = cu.collection_id
-    WHERE cu.user_id = ${id}
-      AND v.id NOT IN (
-        SELECT videogame_id 
-        FROM games 
-        WHERE user_id = ${id}
-      )
+    JOIN videogames vg on cv.videogames_id = vg.id
+WHERE
+    cu.user_id = ${id}
+    GROUP BY vg.id
+    ORDER BY RANDOM()
+    LIMIT 5
   `;
   return games;
 };

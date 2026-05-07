@@ -1,5 +1,5 @@
 import * as UsersModel from "../models/UserModel.js";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase.js";
 
 export const login = async (req, res) => {
@@ -32,6 +32,41 @@ export const login = async (req, res) => {
   }
 };
 
+export const register = async (req, res) => {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).json({
+      error: "Nombre, email y password son obligatorios",
+    });
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    const firebaseUser = userCredential.user;
+
+    const newUser = await UsersModel.createUser({
+      name,
+      email,
+      password,
+      uuid: firebaseUser.uid
+    });
+
+    return res.status(201).json({
+      user: newUser,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      error: "Error al registrar usuario",
+      debug: error.code || error.message,
+    });
+  }
+};
+
 export const getUserSuggestion = async (req, res) => {
   const { id } = req.params;
   try {
@@ -54,8 +89,9 @@ export const getAllUsers = async (req, res) => {
 
 export const getUserById = async (req, res) => {
   const { id } = req.params;
+  const { currentUserId } = req.query;
   try {
-    const user = await UsersModel.getUserById(id);
+    const user = await UsersModel.getUserById(id, currentUserId);
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -77,7 +113,7 @@ export const toggleFollow = async (req, res) => {
 
   try {
     const result = await UsersModel.toggleFollowUser(followerId, followedId);
-    
+
     if (result.followed) {
       res.status(201).json({ message: "Usuario seguido correctamente", followed: true });
     } else {

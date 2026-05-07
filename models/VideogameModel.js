@@ -7,9 +7,9 @@ export const getAllVideogames = async () => {
         c.id AS "idEmpresa", c.name AS "Empresa",
         COALESCE(json_agg(json_build_object('id', p.id, 'name', p.name)) FILTER (WHERE p.id IS NOT NULL), '[]') AS platforms
     FROM videogames v 
-    LEFT JOIN companies_videogames cv ON v.id = cv.videogame_id
+    LEFT JOIN companies_videogames cv ON v.id = cv.videogames_id
     LEFT JOIN companies c ON cv.company_id = c.id
-    LEFT JOIN platforms_videogames pv ON v.id = pv.videogame_id
+    LEFT JOIN platforms_videogames pv ON v.id = pv.videogames_id
     LEFT JOIN platforms p ON pv.platform_id = p.id
     GROUP BY v.id, c.id, c.name
   `;
@@ -32,9 +32,9 @@ export const getVideogameById = async (id) => {
           'player_notes', g.player_notes
         )) FILTER (WHERE g.id IS NOT NULL), '[]') AS games
     FROM videogames v 
-    LEFT JOIN companies_videogames cv ON v.id = cv.videogame_id
+    LEFT JOIN companies_videogames cv ON v.id = cv.videogames_id
     LEFT JOIN companies c ON cv.company_id = c.id
-    LEFT JOIN platforms_videogames pv ON v.id = pv.videogame_id
+    LEFT JOIN platforms_videogames pv ON v.id = pv.videogames_id
     LEFT JOIN platforms p ON pv.platform_id = p.id
     LEFT JOIN games g ON g.videogame_id = v.id
     WHERE v.id = ${id}
@@ -45,7 +45,7 @@ export const getVideogameById = async (id) => {
 
 // Crear un nuevo videojuego
 export const createVideogame = async (videogame) => {
-  const { nombre, genero, nota, portada } = videogame;
+  const { nombre, genero, nota, portada, id_compania, plataformas } = videogame;
 
   const [newVideogame] = await sql`
     INSERT INTO videogames (name, genre, note, cover)
@@ -53,12 +53,28 @@ export const createVideogame = async (videogame) => {
     RETURNING *
   `;
 
+  if (id_compania) {
+    await sql`
+      INSERT INTO companies_videogames (videogames_id, company_id)
+      VALUES (${newVideogame.id}, ${id_compania})
+    `;
+  }
+
+  if (plataformas && Array.isArray(plataformas) && plataformas.length > 0) {
+    for (const platformId of plataformas) {
+      await sql`
+        INSERT INTO platforms_videogames (videogames_id, platform_id)
+        VALUES (${newVideogame.id}, ${platformId})
+      `;
+    }
+  }
+
   return newVideogame;
 };
 
 export const getUserGames = async (UserId) => {
   const rows = await sql`SELECT v.*, c.name as Collection
-    FROM videogames v JOIN collections_videogames cv ON v.id = cv.videogame_id
+    FROM videogames v JOIN collections_videogames cv ON v.id = cv.videogames_id
     JOIN collections c ON cv.collection_id = c.id
     JOIN collections_users cu ON cu.collection_id = c.id
     JOIN users u ON u.id = cu.user_id
