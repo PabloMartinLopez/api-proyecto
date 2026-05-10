@@ -1,6 +1,4 @@
 import * as VideogamesModel from "../models/VideogameModel.js";
-import * as CompanyModel from "../models/CompaniesModel.js";
-import * as CollecionsModel from "../models/CollectionsModel.js";
 
 export const getVideogames = async (req, res) => {
   try {
@@ -23,7 +21,7 @@ export const getVideogame = async (req, res) => {
 };
 
 export const createVideogame = async (req, res) => {
-  const { nombre, genero, id_compania, plataformas, nota, portada, descripcion } = req.body;
+  const { nombre, genero, id_compania, plataformas, nota, portada, descripcion, released_date } = req.body;
 
   try {
     const newVideogame = await VideogamesModel.createVideogame({
@@ -33,7 +31,8 @@ export const createVideogame = async (req, res) => {
       plataformas,
       nota,
       portada,
-      descripcion
+      descripcion,
+      released_date
     });
     res.status(201).json(newVideogame);
   } catch (error) {

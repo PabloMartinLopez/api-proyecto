@@ -32,6 +32,7 @@ CREATE TABLE videogames (
     note NUMERIC(3, 1) DEFAULT 5.0,
     cover TEXT DEFAULT NULL,
     descripcion TEXT DEFAULT NULL,
+    released_date date DEFAULT CURRENT_DATE,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -551,10 +552,17 @@ VALUES
     ('Team Cherry', 16);
 
 INSERT INTO
-    users (email, password, name, UUID)
+    users (
+        email,
+        password,
+        name,
+        UUID,
+        admin
+    )
 VALUES (
         'martinlopezpablo@gmail.com',
         'pablo123',
         'Pablo',
-        'JNyE9SLSpMPy6gdIjdltKzPLjhH2'
+        'JNyE9SLSpMPy6gdIjdltKzPLjhH2',
+        TRUE
     );

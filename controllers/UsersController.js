@@ -123,3 +123,23 @@ export const toggleFollow = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getUserFeed = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const feed = await UsersModel.getUserFeed(id);
+    res.status(200).json(feed);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getUserVideogames = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const videogames = await UsersModel.getUserVideogames(id);
+    res.status(200).json(videogames);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
