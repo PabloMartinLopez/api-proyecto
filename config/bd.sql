@@ -132,8 +132,8 @@ CREATE TABLE games (
     note NUMERIC(2, 1) DEFAULT 5.0,
     total_time VARCHAR(100),
     player_notes TEXT,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (videogame_id, user_id)
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    -- UNIQUE (videogame_id, user_id)
 );
 
 INSERT INTO
