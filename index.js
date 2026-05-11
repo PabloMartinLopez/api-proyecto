@@ -33,6 +33,7 @@ app.get('/', async (req, res) => {
 // Rutas principales
 app.use('/api/videogames', VideogamesRoutes);
 app.use('/api/users', UserRoutes);
+app.use('/api/user', UserRoutes);
 app.use('/api/platforms', PlatformRoutes);
 app.use('/api/companies', CompaniesRoutes);
 app.use('/api/collections', CollectionsRoutes);
