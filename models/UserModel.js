@@ -42,11 +42,20 @@ export const createUser = async (user) => {
 };
 
 export const updateUser = async (id, updatedUser) => {
-  const { name, email, password } = updatedUser;
-  const [user] = await sql`SELECT * FROM users WHERE id = ${id}`;
+  const { name, email, password, image } = updatedUser;
+  // Solo comprobamos que exista
+  const [user] = await sql`SELECT id FROM users WHERE id = ${id}`;
   if (!user) return null;
-  const updated =
-    await sql`UPDATE users SET name = ${name}, email = ${email}, password = ${password} WHERE id = ${id} RETURNING *`;
+  
+  // Usamos COALESCE en SQL para evitar guardar nulos si no queremos
+  const updated = await sql`
+    UPDATE users SET 
+      name = COALESCE(${name ?? null}, name), 
+      email = COALESCE(${email ?? null}, email), 
+      password = COALESCE(${password ?? null}, password),
+      image = COALESCE(${image ?? null}, image)
+    WHERE id = ${id} RETURNING *
+  `;
   return updated[0];
 };
 
@@ -57,6 +66,11 @@ export const deleteUserById = async (id) => {
         RETURNING *
     `;
   return deleted;
+};
+
+export const getRawUserById = async (id) => {
+  const [user] = await sql`SELECT * FROM users WHERE id = ${id}`;
+  return user || null;
 };
 
 export const getUserLogin = async (email, password) => {

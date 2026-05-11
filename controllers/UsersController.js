@@ -1,5 +1,5 @@
 import * as UsersModel from "../models/UserModel.js";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updatePassword } from "firebase/auth";
 import { auth } from "../config/firebase.js";
 
 export const login = async (req, res) => {
@@ -139,6 +139,52 @@ export const getUserVideogames = async (req, res) => {
   try {
     const videogames = await UsersModel.getUserVideogames(id);
     res.status(200).json(videogames);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { name, email, password, image } = req.body;
+
+  if (image !== undefined && image !== null && !Number.isInteger(image)) {
+    return res.status(400).json({ error: "El dato de la imagen solo puede ser un entero" });
+  }
+
+  try {
+    if (password !== null && password !== undefined && password !== "") {
+      // Necesitamos loguearnos en Firebase para cambiar la contraseña
+      const rawUser = await UsersModel.getRawUserById(id);
+      if (!rawUser) {
+        return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      // Iniciar sesión en Firebase con las credenciales antiguas para poder cambiar la contraseña
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, rawUser.email, rawUser.password);
+        await updatePassword(userCredential.user, password);
+      } catch (fbError) {
+        return res.status(400).json({
+          error: "Error al actualizar la contraseña en Firebase",
+          debug: fbError.code || fbError.message,
+        });
+      }
+    }
+
+    const updatedUser = await UsersModel.updateUser(id, {
+      name,
+      email,
+      password,
+      image
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+    
+    delete updatedUser.password;
+    res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
