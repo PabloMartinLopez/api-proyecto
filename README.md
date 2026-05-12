@@ -24,14 +24,18 @@ api-proyecto/
 - `GET /` - Obtiene todos los videojuegos disponibles.
 - `GET /:id` - Obtiene los detalles de un videojuego específico por su ID.
 - `GET /user/:id` - Obtiene la lista de videojuegos asociados a un usuario específico.
-- `POST /` - Crea un nuevo videojuego, añadiendo opcionalmente su compañía y colección.
+- `POST /` - Crea un nuevo videojuego (permite enviar un arreglo de `plataformas` asociadas y su `released_date`).
 
 ### Users (`/api/users`)
 - `GET /` - Obtiene todos los usuarios registrados.
 - `GET /:id` - Obtiene los detalles de un usuario específico por su ID.
+- `PUT /:id` - Actualiza los datos de un usuario de forma parcial (nombre, imagen, contraseña).
+- `GET /:id/videogames` - Obtiene los videojuegos de un usuario.
 - `GET /:id/suggestion` - Obtiene listas de juegos sugeridos para el usuario.
+- `GET /:id/feed` - Obtiene la actividad reciente del feed de un usuario.
 - `POST /:id/follow` - Alterna el estado de seguimiento entre usuarios (seguir/dejar de seguir).
-- `POST /login` - Autentica a un usuario usando credenciales de Firebase (`email` y `password`) y devuelve los datos del usuario.
+- `POST /login` - Autentica a un usuario usando credenciales de Firebase y devuelve los datos del usuario.
+- `POST /register` - Registra un nuevo usuario en Firebase y en la base de datos local.
 
 ### Platforms (`/api/platforms`)
 - `GET /` - Obtiene todas las plataformas disponibles.
@@ -44,6 +48,7 @@ api-proyecto/
 ### Collections (`/api/collections`)
 - `GET /:User_id` - Obtiene las colecciones de videojuegos asociadas a un usuario en específico.
 - `POST /` - Crea una nueva colección.
+- `POST /:collection_id/games` - Añade un videojuego existente a una colección específica.
 
 ### Search (`/api/search`)
 - `GET /` - Realiza búsquedas de elementos en la base de datos.
